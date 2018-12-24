@@ -65,7 +65,7 @@
 <p>1.2 如果系统没有htpasswd 工具 先安装httpd （注意不要启动httpd）</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install httpd</span><br></pre></td></tr></table></figure>
 <p>1.3 生成密码文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">htpasswd -c /opt/nginx/nginx-es/passwd.db username #根据提示输入密码 创建第二个用户 不要加 -c 参数，否则会覆盖掉第一个用户。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">htpasswd -c /opt/nginx/nginx-es/passwd.db username</span><br><span class="line">根据提示输入密码 创建第二个用户 不要加 -c 参数，否则会覆盖掉第一个用户。</span><br></pre></td></tr></table></figure>
 <p>重新加载nginx </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/opt/nginx/nginx-es/nginx -s reload</span><br></pre></td></tr></table></figure>
 <p>1.4 重新登陆 访问nginx地址<br>(<a href="https://192.168.5.242:15601" target="_blank" rel="noopener">https://192.168.5.242:15601</a>)  要求输入 用户名 密码 </p>
