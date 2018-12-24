@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>ELK安装部署文档 | nice</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">ELK安装部署文档</h1><a id="logo" href="/.">nice</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/guestbook/"><i class="fa fa-comments"> 留言</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">ELK安装部署文档</h1><div class="post-meta">Dec 24, 2018<span> | </span><span class="category"><a href="/categories/运维/">运维</a></span></div><div class="post-content"><p>[ELK 权威中文文档] (<a href="https://www.elastic.co/guide/cn/index.html" target="_blank" rel="noopener">https://www.elastic.co/guide/cn/index.html</a>)</p>
+<p>本教程ELK架构：服务端安装elasticsearch logstash  kibana 客户端安装 filebeat 利用filebeat采集日志 发送到服务端logstash，由服务端logstash 统一收集整理发送给服务端es，并由kibana展示。</p>
+<p>环境说明：本教程服务端系统为centos7.3  客户端 centos6.8</p>
+<p>准备工作：服务端安装 jdk1.8，因为elasticsearch是java开发的。<br>                 安装包准备： es：<br> <a href="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm</a><br>                                      kibana：<a href="https://artifacts.elastic.co/downloads/kibana/kibana-6.5.4-x86_64.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/kibana/kibana-6.5.4-x86_64.rpm</a><br>                                      logstash：<a href="https://artifacts.elastic.co/downloads/logstash/logstash-6.5.4.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/logstash/logstash-6.5.4.rpm</a><br>                                      filebeat：<a href="https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-x86_64.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-x86_64.rpm</a></p>
+<p>一. 服务端 安装es</p>
+<ol>
+<li><p>采用rpm包安装   安装包下载地址：<a href="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm</a><br>  wget   <a href="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm</a><br>  rpm -ivh elasticsearch-6.5.4.rpm</p>
+<p>2.查看es安装位置</p>
+</li>
+</ol>
+<p>   3.配置es<br>        vim /etc/elasticsearch/elasticsearch.yml  （修改以下配置）<br><br>   注意格式 （留一个空格)</p>
+<ol start="4">
+<li><p>启动 es 加入开机自启</p>
+<pre><code>systemctl start elasticsearch (开启)
+systemctl status elasticsearch (状态)
+systemctl restart elasticsearch (重启)
+systemctl enable elasticsearch (加入开机自启)
+</code></pre></li>
+<li><p>检查es 是否启动<br>   netstat -anlptu | grep 9200  #查看端口是否被监听<br>   curl <a href="http://localhost:9200" target="_blank" rel="noopener">http://localhost:9200</a>     #查看es状态</p>
+</li>
+</ol>
+<p>二.服务端 安装kibana<br>   1.1 下载安装kibana </p>
+<pre><code>wget  https://artifacts.elastic.co/downloads/kibana/kibana-6.5.4-x86_64.rpm
+rpm -ivh kibana-6.5.4-x86_64.rpm
+</code></pre><p>   1.2  查看 kibana 安装路径</p>
+<p>   1.3 修改配置文件<br>                vim /etc/kibana/kibana.yml  # 修改一下项</p>
+<p>   1.4 启动kibana并加入开机自启<br>                systemctl start kibana          #开启<br>                systemctl enable kibana      #加入开机自启<br>                systemctl restart kibana       #重启<br>                systemctl stop kibana           #停止<br>                systemctl status kibana        #状态</p>
+<p>   1.5 检查kibana启动状态<br>                netstat -anlptu | grep 5601  #查看端口是否被监听<br>                浏览器访问  <a href="http://192.168.5.242:5601" target="_blank" rel="noopener">http://192.168.5.242:5601</a></p>
+<p>三.服务端 logstash 安装<br>   1.1 下载安装logstash<br>      wget <a href="https://artifacts.elastic.co/downloads/logstash/logstash-6.5.4.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/logstash/logstash-6.5.4.rpm</a><br>                rpm -ivh logstash-6.5.4.prm</p>
+<p>   2.2 查看logstash </p>
+<p>   2.3 配置logstash<br>     vim /etc/logstash/logstash.yml  # 修改以下配置<br><br>     path.data: /var/lib/logstash<br>     http.host: “192.168.5.242”<br>     path.logs: /var/log/logstash</p>
+<p>至此 ELK 服务端安装完成 #######</p>
+<p> 四.客户端 filebeat 安装<br>   1.1 下载安装filebeat<br>    wget  <a href="https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-x86_64.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-x86_64.rpm</a><br>    rpm -ivh filebeat-6.4.2-x86_64.rpm</p>
+<p>   1.2 查看 filebeat 安装路径。</p>
+<p>   1.3 修改 filebeat 配置文件<br>    vim /etc/filebeat/filebeat.yml<br>   1.4 启动filebeat （centos 6 ）<br>                /etc/init.d/filebeat start<br>   加入开机自启，我采用的方式 在/etc/rc.local  添加 /etc/init.d/filebeat start<br>   这个时候 客户端 就开始给服务端 logstash 发送日志了 ，接下来 我们配置 服务端logstash 用来接收filebeat 发过来的日志 并且 发送到es，通过kibana 展示出来。</p>
+<p>五. 服务端 logstash 配置接受 filebeat 发送的数据。<br>   1.1 编写 日志接收文件。 /etc/logstash/conf.d<br>   vim /etc/logstash/conf.d/monitor-pile.conf  # 名字随便写，以.conf 结尾</p>
+<p>我的配置如下 ：###########</p>
+<pre><code>input {
+      beats {
+           port=&gt;5044
+          # codec =&gt; json
+      }
+}
+</code></pre><p>output {</p>
+<p> #############192.168.5.244##########################</p>
+<p>   if [fields][logtype] == “5.244DataTransServer”{                         ##这里的 logtype 是客户端定义好的名字。<br>        elasticsearch {<br>                hosts =&gt; [“192.168.5.242:9200”]                                   ##输出到es<br>                index =&gt; “datatransserver-%{+YYYY.MM.dd}”             ##创建索引，索引名字为 xxx-年月日形式<br>                }<br>}</p>
+<p>   if [fields][logtype] == “5.244-module-app”{<br>        elasticsearch {<br>                hosts =&gt; [“192.168.5.242:9200”]<br>                index =&gt; “module-app-%{+YYYY.MM.dd}”<br>                }<br>}</p>
+<p>}</p>
+<p>1.2 测试 logstash 配置是否正确。<br>     /usr/share/logstash/bin/logstash –path.settings /etc/logstash/ -f  /etc/logstash/conf.d/log.conf   –config.test_and_exit     ##测试并退出</p>
+<p>测试通过 后， 正式启动 logstash<br>    /usr/share/logstash/bin/logstash –path.settings /etc/logstash/ -f  /etc/logstash/conf.d/log.conf   &amp;     ##放入后台运行<br>1.3 浏览器 打开kibana 创建索引。</p>
+<p>1.4 创建索引后即可查看日志。</p>
+<p>六.定时清理索引。<br>   1.1 查看索引<br>     curl ‘localhost:9200/_cat/indices?v’<br>   1.2 删除索引<br>     curl -XDELETE <a href="http://localhost:9200/module-manage-2018.11.11" target="_blank" rel="noopener">http://localhost:9200/module-manage-2018.11.11</a>  # 删除module-manage-2018.11.11 这个索引<br>   1.3 查看 es占用空间大小<br>     df -h<br>     du -sh /var/lib/elasticsearch/<br>   1.4 编写脚本 实现定时清理七天以前的索引</p>
+<p>############################################################################</p>
+<p>/bin/bash</p>
+<p>指定日期(7天前)<br>DATA=<code>date -d &quot;1 week ago&quot; +%Y.%m.%d</code></p>
+<p>当前日期<br>time=<code>date</code></p>
+<p>删除7天前的日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl -XDELETE http://localhost:9200/*-$&#123;DATA&#125;</span><br><span class="line">if [ $? -eq 0 ];then</span><br><span class="line">echo $time&quot;--&gt;del $DATA log success..&quot; &gt;&gt; /home/towatt/scripts/es-index-clear.log</span><br><span class="line">else</span><br><span class="line"></span><br><span class="line">echo $time&quot;--&gt;del $DATA log fail..&quot; &gt;&gt; /home/towatt/scripts/es-index-clear.log</span><br></pre></td></tr></table></figure></p>
+<p>############################################################################</p>
+<p>七. nginx 反向代理 kibana，利用htpasswd工具 实现 用户名 密码登陆。<br>   1.1 安装nginx （安装过程省略）<br>   1.2 nginx 配置</p>
+<pre><code>worker_processes  1;
+events {
+    worker_connections  1024;
+}
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+    server {
+        listen       15600 ssl;
+        ssl on;
+        ssl_certificate     /home/towatt/config/cert/ssl/towatt.com.crt;
+        ssl_certificate_key /home/towatt/config/cert/ssl/towatt.com.key;
+        server_name  localhost;
+        location / {
+            auth_basic &quot;secret&quot;;
+            auth_basic_user_file /opt/nginx/nginx-es/passwd.db;
+            proxy_pass http://192.168.5.242:5601;
+            proxy_set_header Host $host:5601;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Via &quot;nginx&quot;;
+       }
+      access_log off;
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+</code></pre><p>1.2 如果系统没有htpasswd 工具 先安装httpd （注意不要启动httpd）<br>   yum -y install httpd</p>
+<p>1.3 生成密码文件  htpasswd -c /opt/nginx/nginx-es/passwd.db username 根据提示输入密码<br>   创建第二个用户 不要加 -c 参数，否则会覆盖掉第一个用户。<br>重新加载nginx  /opt/nginx/nginx-es/nginx -s reload</p>
+<p>1.4 重新登陆 访问nginx地址<br>(<a href="https://192.168.5.242:15601" target="_blank" rel="noopener">https://192.168.5.242:15601</a>)  要求输入 用户名 密码 </p>
+</div><iframe src="/donate/?AliPayQR=null&amp;WeChatQR=/img/WeChatQR.png&amp;GitHub=null&amp;BTCQR=null&amp;BTCKEY=null&amp;PayPal=null" style="overflow-x:hidden; overflow-y:hidden; border:0xp none #fff; min-height:240px; width:100%;" frameborder="0" scrolling="no"></iframe><div class="tags"><a href="/tags/技术/">技术</a></div><div class="post-nav"><a class="next" href="/2018/12/22/一个人在夜里想的太多/">一个人在夜里想的太多</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC80MTc2Ni8xODMxMg=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://yoursite.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/友人/">友人</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/运维/">运维</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/生活/" style="font-size: 15px;">生活</a> <a href="/tags/技术/" style="font-size: 15px;">技术</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/12/24/ELK安装部署文档/">ELK安装部署文档</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/22/一个人在夜里想的太多/">一个人在夜里想的太多</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/21/故事的最后你还是说了拜拜/">故事的最后你还是说了拜拜</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/20/纸上得来终觉浅/">纸上得来终觉浅</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/20/随记/">随记</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">nice.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
