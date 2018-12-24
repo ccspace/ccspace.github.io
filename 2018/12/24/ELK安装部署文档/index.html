@@ -7,9 +7,7 @@
 <li>logstash：<a href="https://artifacts.elastic.co/downloads/logstash/logstash-6.5.4.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/logstash/logstash-6.5.4.rpm</a></li>
 <li>filebeat：<a href="https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-x86_64.rpm" target="_blank" rel="noopener">https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.5.4-x86_64.rpm</a></li>
 </ul>
-<h3 id="一-服务端-安装es"><a href="#一-服务端-安装es" class="headerlink" title="一. 服务端 安装es"></a>一. 服务端 安装es</h3><ol>
-<li>采用rpm包安装 安装包下载地址：</li>
-</ol>
+<h3 id="一-服务端-安装es"><a href="#一-服务端-安装es" class="headerlink" title="一. 服务端 安装es"></a>一. 服务端 安装es</h3><p>1.采用rpm包安装 安装包下载地址：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm</span><br><span class="line">$ wget   https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.5.4.rpm</span><br><span class="line">$ rpm -ivh elasticsearch-6.5.4.rpm</span><br></pre></td></tr></table></figure>
 <p>2.查看es安装位置</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@elk conf.d]# whereis elasticserach</span><br><span class="line">elasticserach: /etc/elasticserach/usr/share/elasticserach</span><br><span class="line">```       </span><br><span class="line">3.配置es</span><br></pre></td></tr></table></figure>
